@@ -24,6 +24,9 @@ const Video = () => {
   const [userCommentList, setUserCommentList] = useState([]);
   const { userId } = useParams();
   const { videoId } = useParams();
+  const [warningText, setWarningText] = useState("");
+  useEffect(() => {}, [warningText]);
+
   useEffect(() => {
     axios.get(link + userId).then(function (res) {
       setUser(res.data);
@@ -88,19 +91,25 @@ const Video = () => {
       });
   }, [videoId]);
   const commentAction = () => {
-    axios
+    if (userComment == '') {
+      setWarningText("You have to add your comment first!");
+
+    } else {
+      setWarningText("");
+      axios
       .post("https://670192fcb52042b542d81d15.mockapi.io/Comments", {
         videoId: videoId,
         user: `@${user.userName}`,
         Comment: userComment,
         date: new Date(),
         image:
-          "https://static.vecteezy.com/system/resources/thumbnails/024/983/914/small_2x/simple-user-default-icon-free-png.png",
+        "https://static.vecteezy.com/system/resources/thumbnails/024/983/914/small_2x/simple-user-default-icon-free-png.png",
       })
       .then(function (response) {
         setUserComment("");
       })
       .catch(function (error) {});
+    }
   };
   useEffect(() => {
     axios
@@ -205,6 +214,8 @@ const Video = () => {
                 Add
               </button>
             </div>
+            <p className="text-error">{warningText}</p>
+
             {userCommentList.map((el) => {
               if (el.videoId == videoId) {
                 return (
